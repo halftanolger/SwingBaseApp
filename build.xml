@@ -72,8 +72,11 @@
             		<manifest>
 				<attribute 
 					name="Main-Class" 
-			       		value="${main-class}"/>
-            		</manifest>
+					value="${main-class}"/>
+				<attribute 
+					name="SplashScreen-Image" 
+					value="splash.gif"/>
+			</manifest>
         	</jar>
     	</target>
 
@@ -87,7 +90,7 @@
 	    	depends="jar">
 	    	<java 
 			fork="true" 
-		  	classname="${main-class}">
+			classname="${main-class}">
 	      		<classpath> 
 				<path 
 					refid="classpath"/>
@@ -95,7 +98,7 @@
 					refid="application"/>
 				<path 
 					location="${jar.dir}/${ant.project.name}.jar"/>
-	      		</classpath>
+			</classpath>
 	   	</java> 	
     	</target>
 

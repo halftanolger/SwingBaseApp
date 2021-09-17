@@ -14,11 +14,13 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.*;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowAdapter;
+import java.awt.*;
 
 import javax.swing.JMenu;
 import javax.swing.JFrame;
@@ -30,8 +32,9 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.apache.log4j.BasicConfigurator;
 
-public class SwingBaseApp extends JFrame {
+import no.base.app.Datamanager;
 
+public class SwingBaseApp extends JFrame {
 
 	private int initialWith = 800;
 	private int initialHeight = 600;
@@ -41,19 +44,36 @@ public class SwingBaseApp extends JFrame {
 	private JPanel mainPanel;
 
 	public static void main(String args[]) {
-
 		BasicConfigurator.configure();
 		logger.info("Hello World");
 		SwingBaseApp.boot();
-
 	}
 
 	public SwingBaseApp() {
 
+		final SplashScreen splash = SplashScreen.getSplashScreen();
+        	if (splash == null) {
+            		System.out.println("SplashScreen.getSplashScreen() returned null");
+            		return;
+        	}
+        	Graphics2D g = splash.createGraphics();
+        	if (g == null) {
+            		System.out.println("g is null");
+            		return;
+        	}
+        	for(int i=0; i<100; i++) {
+            		renderSplashFrame(g, i);
+            		splash.update();
+            		try {
+                		Thread.sleep(90);
+            		} catch(InterruptedException e) {
+            		}
+        	}
+        	splash.close();
+        	setVisible(true);
+        	toFront();
 		initComponents();
 		initJFrame();
-
-
 	}
 
 	public void exitSwingBaseApp(int ret) {
@@ -64,10 +84,10 @@ public class SwingBaseApp extends JFrame {
 	public static void boot() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				new SwingBaseApp().setVisible(true);
+				SwingBaseApp a = new SwingBaseApp();
+				Datamanager.getInstance().setSwingBaseApp(a);
 			}
 		});		
-		
 	}
 
 	private void initJFrame() {
@@ -92,10 +112,25 @@ public class SwingBaseApp extends JFrame {
 
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
+
+		SwingBaseMenu m = new SwingBaseMenu();
+		setJMenuBar(m.getJMenuBar());
+
 	}
 
 	private void exitForm(WindowEvent evt) {
 		exitSwingBaseApp(0);
 	}
+
+	static void renderSplashFrame(Graphics2D g, int frame) {
+        	final String[] comps = {"foo", "bar", "baz"};
+        	g.setComposite(AlphaComposite.Clear);
+        	g.fillRect(120,140,200,40);
+        	g.setPaintMode();
+        	g.setColor(Color.BLACK);
+        	g.drawString("Loading "+comps[(frame/5)%3]+"...", 120, 150);
+    	}
+
+
 
 }
